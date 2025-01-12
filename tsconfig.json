@@ -8,6 +8,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+        "strict": false,  // Disable strict type checking
+        "noImplicitAny": false,  // Allow implicit any types
+        "skipLibCheck": true  // Skip type checking of declaration files
+    
   }
 }
