@@ -1,27 +1,38 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button"; // Import Shadcn UI Button
 import { useToast } from "@/hooks/use-toast";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
 const Decryption = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [decryptedText, setDecryptedText] = useState("");
+  // Specify types for state variables
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Image as base64 string or null
+  const [decryptedText, setDecryptedText] = useState<string>(""); // Decrypted text
+
   const { toast } = useToast();
 
   // Function to handle changes in the image input
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
       const reader = new FileReader();
       reader.onload = () => {
-        setSelectedImage(reader.result);
+        if (reader.result) {
+          setSelectedImage(reader.result as string); // Result as string
+        } else {
+          setSelectedImage(null);
+        }
       };
       reader.readAsDataURL(file);
+    } else {
+      toast({
+        title: "No file selected",
+        description: "Please select an image to upload.",
+        variant: "destructive",
+      });
     }
   };
 
-  // Function to decrypt the image
   const handleDecrypt = () => {
     if (!selectedImage) {
       toast({
@@ -32,14 +43,24 @@ const Decryption = () => {
       return;
     }
 
-    const img = new Image();
+    const img = new Image(); // Type inferred as HTMLImageElement
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
+      if (!ctx) {
+        toast({
+          title: "Error",
+          description: "Failed to get canvas context.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       canvas.width = img.width;
       canvas.height = img.height;
 
+      // Draw the image onto the canvas
       ctx.drawImage(img, 0, 0);
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -48,11 +69,13 @@ const Decryption = () => {
       let binaryText = "";
       let byte = "";
 
+      // Extract the LSB of each color channel to decode the hidden text
       for (let i = 0; i < data.length; i += 4) {
         for (let j = 0; j < 3; j++) {
           byte += data[i + j] & 1; // Extract LSB of each color channel
 
           if (byte.length === 8) {
+            // If we reach the null byte (8 bits of 0), stop the decryption
             if (byte === "00000000") {
               setDecryptedText(binaryText);
               return;
@@ -64,10 +87,21 @@ const Decryption = () => {
         }
       }
 
+      // If the loop completes without hitting the null byte, set the decrypted text
       setDecryptedText(binaryText);
     };
 
-    img.src = selectedImage;
+    // Handle image loading errors
+    img.onerror = () => {
+      toast({
+        title: "Error",
+        description: "Failed to load the selected image.",
+        variant: "destructive",
+      });
+    };
+
+    // Set the image source to trigger the loading process
+    img.src = selectedImage || "";
   };
 
   return (
@@ -93,7 +127,7 @@ const Decryption = () => {
           {selectedImage && (
             <div className="image-preview max-w-full max-h-[40vh] overflow-hidden mt-4">
               <img
-                src={selectedImage}
+                src={selectedImage || ""}
                 alt="selected"
                 className="object-contain w-full h-full"
               />

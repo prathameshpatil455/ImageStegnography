@@ -24,7 +24,9 @@ const Encryption = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setSelectedImage(reader.result as string);
+        if (reader.result) {
+          setSelectedImage(reader.result as string);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -37,12 +39,20 @@ const Encryption = () => {
   };
 
   const handleEncrypt = () => {
+    if (!selectedImage) {
+      toast({
+        title: "No image selected",
+        description: "Please select an image to encrypt.",
+      });
+      return;
+    }
+
     // Convert the text to binary
     const textBinary =
       text
         .split("")
         .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
-        .join("") + "00000000";
+        .join("") + "00000000"; // Append 8 bits for the end of the text
 
     // Embed the binary text into the image using LSB steganography
     const img = new Image();
@@ -50,27 +60,36 @@ const Encryption = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      ctx.drawImage(img, 0, 0);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      const maxCapacity = Math.floor((img.width * img.height * 3) / 8);
-      if (text.length + 1 > maxCapacity) {
+      if (!ctx) {
         toast({
-          title: "Text too long!",
-          description: "Maximum embeddable characters: " + maxCapacity,
+          title: "Error",
+          description: "Failed to get canvas context.",
         });
         return;
       }
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      // Check the maximum capacity for embedding the text
+      const maxCapacity = Math.floor((img.width * img.height * 3) / 8);
+      if (textBinary.length > maxCapacity) {
+        toast({
+          title: "Text too long!",
+          description: `Maximum embeddable characters: ${maxCapacity}`,
+        });
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
 
       let textIndex = 0;
       for (let i = 0; i < data.length; i += 4) {
         for (let j = 0; j < 3; j++) {
           if (textIndex < textBinary.length) {
+            // Embed one bit of text into each color channel (RGB)
             data[i + j] =
               (data[i + j] & 0xfe) | parseInt(textBinary[textIndex++], 2);
           }
@@ -91,7 +110,16 @@ const Encryption = () => {
         description: "Image is ready for download.",
       });
     };
-    img.src = selectedImage!;
+
+    img.onerror = () => {
+      toast({
+        title: "Error",
+        description: "Failed to load the selected image.",
+      });
+    };
+
+    // Ensure the image source is set properly (add fallback for selectedImage)
+    img.src = selectedImage || "";
   };
 
   const handleDownload = () => {
@@ -148,7 +176,7 @@ const Encryption = () => {
             <div className="image-preview max-h-[50vh] overflow-hidden">
               <AspectRatio ratio={16 / 9} className="w-full">
                 <img
-                  src={encryptedImage || selectedImage}
+                  src={encryptedImage || selectedImage || ""}
                   alt="encrypted"
                   className="object-contain w-full h-full"
                 />

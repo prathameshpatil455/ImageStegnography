@@ -11,9 +11,10 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
+import { ReactNode } from "react";
 
 function App() {
-  const Layout = ({ children }) => {
+  const Layout = ({ children }: { children: ReactNode }) => {
     return (
       <main className="flex flex-col gap-4 min-h-screen py-4 px-8 box-border">
         <Navbar />
