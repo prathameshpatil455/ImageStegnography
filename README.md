@@ -1,50 +1,49 @@
-# React + TypeScript + Vite
+# 🕵️‍♂️ Image Steganography Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A privacy-focused web application that allows users to **hide secret text messages within images** using steganography techniques, all processed client-side in the browser. Built with **ReactJS**, **TailwindCSS**, and **shadcn/ui**, this tool offers a sleek, responsive UI with robust encryption and decryption logic.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌐 Live Demo
 
-## Expanding the ESLint configuration
+🔗 [Try it Now](https://image-stegnography.netlify.app/)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## 🚀 Features
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### ✨ Encode (Encrypt + Embed)
+- Upload an image (`.png`, `.jpg`, etc.)
+- Input a **secret message** to be embedded
+- Encrypts and hides the text inside the image using steganography
+- Download the new image with the hidden data
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 🔓 Decode (Extract + Decrypt)
+- Upload the stego-image (previously downloaded)
+- Automatically extracts and decrypts the hidden message
+- Secure and accurate retrieval
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### 🛡️ All in Browser
+- No server, no data storage—**100% client-side**
+- Uses browser-native APIs for encryption and file handling
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### 💻 Tech Highlights
+- Built with **ReactJS** for responsive SPA structure
+- **TailwindCSS** for modern utility-first styling
+- **shadcn/ui** for clean, accessible component design
+- Custom **crypto logic** for safe message encryption and retrieval
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| ReactJS | Frontend framework |
+| TailwindCSS | Styling and layout |
+| shadcn/ui | UI components |
+| Custom Crypto | Message encryption/decryption |
+| HTML5 Canvas | Image pixel manipulation |
+
+---
+
