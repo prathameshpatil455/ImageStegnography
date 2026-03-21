@@ -47,3 +47,27 @@ A privacy-focused web application that allows users to **hide secret text messag
 
 ---
 
+## Development
+
+**Requirements:** [Node.js](https://nodejs.org/) (LTS recommended) and [pnpm](https://pnpm.io/) (see `packageManager` in `package.json`; [Corepack](https://nodejs.org/api/corepack.html) can install the pinned version).
+
+```bash
+pnpm install
+pnpm dev
+```
+
+The dev server prints a local URL (typically `http://localhost:5173`).
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start Vite dev server |
+| `pnpm build` | Typecheck and production build (`dist/`) |
+| `pnpm preview` | Serve the production build locally |
+| `pnpm lint` | Run ESLint |
+
+**CI:** Pushing or opening a pull request against `main` or `master` runs lint and production build on GitHub Actions (`.github/workflows/ci.yml`).
+
+**Deployment:** The live site is hosted on [Netlify](https://www.netlify.com/); connect the repo there and use install command `pnpm install` and build command `pnpm build` (or rely on Netlify’s detection when `pnpm-lock.yaml` is present).
+
+---
+
